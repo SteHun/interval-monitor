@@ -34,10 +34,7 @@ def main():
     add_current_time(timestamps, bpm_averages, bpms)
     keyboard.add_hotkey(ACTIVATE_KEY, add_current_time, args=(timestamps, bpm_averages, bpms))
     keyboard.wait(STOP_KEY)
-    print(generate_string(convert_timestamps(timestamps), bpms), "\n")
-    print(generate_string(convert_timestamps(timestamps), bpm_averages), "\n")
-    print(bpm_averages)
-
+    print("writing to files...")
     with open(FILE_PATH, "w") as file, open(AVERAGE_FILE_PATH, "w")  as average_file:
         file.write(generate_string(convert_timestamps(timestamps), bpms))
         average_file.write(generate_string(convert_timestamps(timestamps), bpm_averages))
@@ -51,7 +48,7 @@ def add_current_time(timestamps, bpm_averages, bpms, write = True):
     bpms.append(last_bpm)
     if write:
         print(f"{last_bpm}BPM, average: {average_bpm}BPM"
-        if is_more_than_one_timestamp else "not enough data")
+        if is_more_than_one_timestamp else f"not enough data, continue pressing {ACTIVATE_KEY} to generate a BPM")
 
 def calculate_last_bpm(timestamps):
     assert type(timestamps) == list, "input should be a list"
