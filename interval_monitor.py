@@ -7,19 +7,29 @@ STOP_KEY = "alt"
 
 def main():
     timestamps = []
+    bpm_averages = []
+    bpms = []
     keyboard.wait(ACTIVATE_KEY)
-    add_current_time(timestamps)
-    keyboard.add_hotkey(ACTIVATE_KEY , add_current_time, args=(timestamps,))
+    add_current_time(timestamps, bpm_averages, bpms)
+    keyboard.add_hotkey(ACTIVATE_KEY, add_current_time, args=(timestamps, bpm_averages, bpms))
     keyboard.wait(STOP_KEY)
+    print(timestamps)
+    print(bpm_averages)
+    print(bpms)
 
-def add_current_time(timestamps, write = True):
+def add_current_time(timestamps, bpm_averages, bpms, write = True):
     timestamps.append(time.time())
+    is_more_than_one_timestamp = len(timestamps) > 1
+    average_bpm = calculate_average_bpm(timestamps) if is_more_than_one_timestamp else 0
+    bpm_averages.append(average_bpm)
+    last_bpm = calculate_last_bpm(timestamps) if is_more_than_one_timestamp else 0
+    bpms.append(last_bpm)
     if write:
-        print(f"{calculate_last_bpm(timestamps)}, average: {calculate_average_bpm(timestamps)}")
+        print(f"{last_bpm}BPM, average: {average_bpm}BPM"
+        if is_more_than_one_timestamp else "not enough data")
 
 def calculate_last_bpm(timestamps):
     assert type(timestamps) == list, "input should be a list"
-    if len(timestamps) == 1: return "not enough data"
     return 60.0/(timestamps[-1] - timestamps[-2])
 
 def calculate_average_bpm(timestamps):
@@ -30,7 +40,6 @@ def calculate_average_bpm(timestamps):
 
 def calculate_average_delta_time(timestamps):
     assert type(timestamps) == list, "input should be a list"
-    if len(timestamps) == 1: return "not enough data"
     all_delta_times = []
     previous_item = None
     for i in timestamps:
