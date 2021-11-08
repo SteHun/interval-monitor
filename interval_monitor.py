@@ -3,7 +3,7 @@ import keyboard
 import time
 
 ACTIVATE_KEY = "shift"
-STOP_KEY = "alt"
+STOP_KEY = "ctrl"
 
 def main():
     timestamps = []
@@ -14,15 +14,17 @@ def main():
     keyboard.add_hotkey(ACTIVATE_KEY, add_current_time, args=(timestamps, bpm_averages, bpms))
     keyboard.wait(STOP_KEY)
     print(timestamps)
+    print(convert_timestamps(timestamps))
     print(bpm_averages)
-    print(bpms)
+    print(bpms, "\n")
+    print(generate_string(convert_timestamps(timestamps), bpms))
 
 def add_current_time(timestamps, bpm_averages, bpms, write = True):
     timestamps.append(time.time())
     is_more_than_one_timestamp = len(timestamps) > 1
-    average_bpm = calculate_average_bpm(timestamps) if is_more_than_one_timestamp else 0
+    average_bpm = calculate_average_bpm(timestamps) if is_more_than_one_timestamp else 0.0
     bpm_averages.append(average_bpm)
-    last_bpm = calculate_last_bpm(timestamps) if is_more_than_one_timestamp else 0
+    last_bpm = calculate_last_bpm(timestamps) if is_more_than_one_timestamp else 0.0
     bpms.append(last_bpm)
     if write:
         print(f"{last_bpm}BPM, average: {average_bpm}BPM"
@@ -51,6 +53,12 @@ def calculate_average(sequence):
     assert type(sequence) == list, "input should be a list"
     total = sum(sequence)
     return total / len(sequence)
+
+def convert_timestamps(timestamp):
+    return [i - timestamp[0] for i in timestamp]
+
+def generate_string(converted_timestamp, bpms):
+    return "".join(f"{t}\t{b}\n" for t,b in zip(converted_timestamp[1:], bpms[1:]))
 
 if __name__ == "__main__":
     main()
